@@ -32,10 +32,7 @@ for _, lap in driver_laps.iterrows():
         tel = lap.get_telemetry().add_distance()
         tel['Velocidad_ms'] = tel['Speed'] / 3.6
         tel['Energia_cinetica_J'] = 0.5 * masa * tel['Velocidad_ms']**2
-        # Agregar columnas de identificación de la vuelta
-        tel['LapNumber'] = lap['LapNumber']
-        #tel['Distance'] = lap['Distance']
-        
+        tel['LapNumber'] = lap['LapNumber']     
        
         all_telemetry.append(tel[['LapNumber', 'Energia_cinetica_J','Distance','X','Y']])
         
@@ -43,12 +40,6 @@ for _, lap in driver_laps.iterrows():
         print(f"Vuelta {lap['LapNumber']} sin telemetría: {e}")
 
 full_telemetry = pd.concat(all_telemetry, ignore_index=True)
-
-#mean_kinectic=full_telemetry.groupby('LapNumber')['Energia_cinetica_J'].mean().reset_index()
-#duckdb.execute("CREATE TABLE mean_kinecticAS SELECT * FROM mean_kinectic")
-#duckdb.sql("SELECT * FROM mean_kinectic ORDER BY LapNumber").show()
-
-
 circuit_info = session.get_circuit_info()
 corners = circuit_info.corners
 

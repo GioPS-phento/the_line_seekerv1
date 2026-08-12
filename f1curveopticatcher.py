@@ -51,6 +51,7 @@ def asignar_curva(distancia, corners):
     return 'Recta'
 
 full_telemetry['Curva'] = full_telemetry['Distance'].apply(lambda d: asignar_curva(d, corners))
+# buscar y elimninar outliers
 q1 = full_telemetry['Energia_cinetica_J'].quantile(0.25)
 q3 = full_telemetry['Energia_cinetica_J'].quantile(0.75)
 IQR=q3-q1
@@ -61,18 +62,19 @@ df_sin_outliers = full_telemetry[
     (full_telemetry['Energia_cinetica_J']  <= higher)
     ]
 
-
+#extraer datos por numero de curva
 for curva in curvas:
 
     dtcur[curva] = full_telemetry[full_telemetry['Curva'] == curva]
 
-
+# agrupar dataframe por numero de vuelta y obtener el numero de vuelta con la curva que mejor conserva la energia del auto
 for nombre, dtf in dtcur.items():
     newdtf=dtf.groupby('LapNumber')['Energia_cinetica_J'].mean().reset_index()
     lapnum.append(newdtf['Energia_cinetica_J'].idxmax())
-
+# obtener datos de telemetria de la  curva en la vuelta especifica
 for cruva ,lap in zip(curvas,lapnum):
         trayectoria[cruva]=full_telemetry[(full_telemetry['Curva'] == cruva) & (full_telemetry['LapNumber'] == lap)]
+# graficar coordenadas obtenidas
 for name, coords in trayectoria.items():
     plt.plot(coords['X'],coords['Y'])
     plt.axis('equal')
